@@ -9,7 +9,8 @@ interface ProductCreateAttributes {
 }
 
 @Table({
-    tableName: 'products'
+    tableName: 'products',
+    createdAt: 'date_time',
 })
 export class Product extends Model<Product, ProductCreateAttributes> {
     @Column({type: INTEGER, unique: true, autoIncrement: true, primaryKey: true})

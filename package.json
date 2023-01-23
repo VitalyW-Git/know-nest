@@ -24,11 +24,13 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/sequelize": "^9.0.0",
+    "@nestjs/swagger": "^6.1.4",
     "mysql2": "^3.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.5",
     "sequelize": "^6.28.0",
-    "sequelize-typescript": "^2.1.5"
+    "sequelize-typescript": "^2.1.5",
+    "swagger-ui-express": "^4.6.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
