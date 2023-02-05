@@ -1,10 +1,4 @@
-import {
-  Column,
-  Model,
-  AllowNull,
-  Sequelize,
-  Table,
-} from 'sequelize-typescript';
+import { Column, Model, AllowNull, Table } from 'sequelize-typescript';
 import { DATE, DOUBLE, INTEGER, STRING } from 'sequelize';
 
 /**
@@ -27,12 +21,15 @@ export class Product extends Model<Product, ProductCreateAttributes> {
   })
   id: number;
 
+  @AllowNull(false)
   @Column({ type: STRING })
   title: string;
 
+  @AllowNull(false)
   @Column({ type: DOUBLE })
   price: number;
 
+  @AllowNull(false)
   @Column({ type: DATE })
   date_time: string;
 }

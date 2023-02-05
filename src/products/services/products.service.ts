@@ -1,5 +1,5 @@
-import { Product } from './product.model';
-import { CreateProductDto } from './dto/create-product.dto';
+import { Product } from '../models/product.model';
+import { CreateProductDto } from '../dto/create-product.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
