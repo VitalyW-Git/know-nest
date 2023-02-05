@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {ConfigService} from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 
 interface DatabaseConfig {
   REDIS_PORT: string;
@@ -7,9 +7,9 @@ interface DatabaseConfig {
 
 @Injectable()
 export class AppService {
-  public envName
+  public envName;
   constructor(private readonly configServices: ConfigService) {
-    this.envName = this.configServices.get<DatabaseConfig>('DB_HOST')
+    this.envName = this.configServices.get<DatabaseConfig>('DB_HOST');
   }
   getHello(): string {
     return this.envName;

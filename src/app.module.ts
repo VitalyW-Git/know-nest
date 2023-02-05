@@ -1,10 +1,10 @@
-import {Module} from '@nestjs/common';
-import {configModule} from './config/configure.root';
-import {AppController} from './app.controller';
-import {AppService} from './app.service';
-import {SequelizeModule} from "@nestjs/sequelize";
-import {ProductsModule} from './products/products.module';
-import {Product} from "./products/product.model";
+import { Module } from '@nestjs/common';
+import { configModule } from './config/configure.root';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { ProductsModule } from './products/products.module';
+import { Product } from './products/product.model';
 
 const environment = process.env.NODE_ENV || 'development';
 
@@ -26,13 +26,11 @@ const environment = process.env.NODE_ENV || 'development';
          * отключаем прежнее поведение
          * error: Unknown column 'createdAt' in 'field list'
          */
-        timestamps: false
+        timestamps: false,
       },
-      models: [
-          Product
-      ]
+      models: [Product],
     }),
-    ProductsModule
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
