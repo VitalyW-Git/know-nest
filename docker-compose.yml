@@ -1,36 +1,51 @@
-version: '3.5'
-
+version: "3"
 services:
-  nest_test_postgres:
+  nest_docker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest_test_docker
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGDATABASE=nest_test_postgres
+      - PGUSER=nest_test
+      - PGPASSWORD=nest_test
+
+  postgres:
     container_name: nest_test_postgres
     image: postgres:14
-    environment:
-      POSTGRES_USER: nest_test
-      POSTGRES_PASSWORD: nest_test
-      PGDATA: /data/postgres
-    volumes:
-      - postgres:/media/home/e71a565e-df94-4d20-94ed-965279de8852/root/nest/project/docker-volumes/postgres
+    restart: always
     ports:
-      - 127.0.0.1:5432:5432
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=nest_test_postgres
+      - POSTGRES_USER=nest_test
+      - POSTGRES_PASSWORD=nest_test
     networks:
       - nest_test
-    restart: unless-stopped
 
-  nest_test_pgadmin:
+  pgadmin:
     container_name: nest_test_pgadmin
     image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: nest_test@admin.com
-      PGADMIN_DEFAULT_PASSWORD: nest_test
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/media/home/e71a565e-df94-4d20-94ed-965279de8852/root/nest/project/docker-volumes/pgadmin
+    restart: always
     ports:
-      - 127.0.0.1:5050:80
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=nest_test@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=nest_test
+    volumes:
+      - ./pgdata/pgadmin:/root/.pgadmin
+    depends_on:
+      - postgres
     networks:
       - nest_test
-    restart: unless-stopped
-
 networks:
   nest_test:
     driver: bridge
