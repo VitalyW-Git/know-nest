@@ -2,7 +2,7 @@
 FROM node:17
 
 # Установка рабочей директории внутри контейнера
-WORKDIR /app
+WORKDIR /usr/app
 
 # Копирование package.json и package-lock.json (если есть) для установки зависимостей
 COPY package*.json ./

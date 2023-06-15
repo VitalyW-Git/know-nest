@@ -1,12 +1,12 @@
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
 
 export const sequelizeConnectDb = (): SequelizeModuleOptions => ({
-  dialect: 'mysql',
+  dialect: 'postgres',
   host: process.env.DB_HOST,
-  port: +process.env.DB_PORT,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  port: +process.env.POSTGRES_PORT,
+  username: 'nest_test',
+  password: 'nest_test',
+  database: 'nest_test_postgres',
   retryAttempts: 10, // Количество попыток подключения к базе данных (по умолчанию: 10)
   synchronize: true, //Если true автоматически загруженные модели будут синхронизированы (по умолчанию: true)
   autoLoadModels: true, // Если true, модели будут загружены автоматически (по умолчанию: false)
