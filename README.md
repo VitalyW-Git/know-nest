@@ -38,6 +38,8 @@ $ npm run test:cov
 ```
 docker compose -f docker-compose.yml up --build -d
 docker compose -f docker-compose.yml up
+docker-compose up -d redis
+docker-compose up -d postgres
 docker compose down
 docker compose ps
 ```

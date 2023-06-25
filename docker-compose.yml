@@ -19,8 +19,7 @@ services:
 #      PGUSER: "nest_test"
 #      PGPASSWORD: "nest_test"
 #    networks:
-#      - webnet
-
+#      - main
   postgres:
     container_name: postgres
     image: postgres:14
@@ -33,8 +32,6 @@ services:
       POSTGRES_DB: "nest_test_postgres"
       POSTGRES_USER: "nest_test"
       POSTGRES_PASSWORD: "nest_test"
-    networks:
-      - webnet
 
   pgadmin:
     container_name: pgadmin
@@ -49,9 +46,34 @@ services:
       - ./pgdata/pgadmin:/root/.pgadmin
     depends_on:
       - postgres
+
+  redis:
+    container_name: redis
+    image: redis:7.0.4-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/redis:/data
+      - ./redis/redis-config:/usr/local/etc/redis
     networks:
-      - webnet
-networks:
-  webnet:
+      - redis-network
+
+  redis_insight:
+    container_name: redis_insight
+    image: redislabs/redisinsight:latest
+    restart: always
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./redis/redis-insight:/db
+    depends_on:
+      - redis
+    networks:
+      - redis-network
 volumes:
-  pgdata:
+  redis:
+  redis_insight:
+networks:
+  redis-network:
+    driver: bridge

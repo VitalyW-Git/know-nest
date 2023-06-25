@@ -40,6 +40,8 @@ out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+redis/redis/dump.rdb
+redis/redis-insight/*
 
 # JIRA plugin
 atlassian-ide-plugin.xml
