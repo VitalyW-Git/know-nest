@@ -1,7 +1,15 @@
-import { AllowNull, Column, Model, Table } from 'sequelize-typescript';
-import { DATE, INTEGER, STRING } from 'sequelize';
+import {
+  AllowNull,
+  Column,
+  CreatedAt,
+  Default,
+  Model,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
+import { DATE, ENUM, INTEGER, STRING } from 'sequelize';
 import { IsEmail, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { UserRoleEnum } from '@src/users/enum/user-role.enum';
 
 @Table({
   tableName: 'users',
@@ -14,12 +22,10 @@ export class UserModel extends Model<UserModel> {
   @Column({ type: INTEGER, primaryKey: true, autoIncrement: true })
   public id: number;
 
-  @ApiProperty({ type: String, example: 'Name' })
   @AllowNull(false)
   @Column({ type: STRING })
   public name: string;
 
-  @ApiProperty({ type: String, example: 'Email' })
   @AllowNull(false)
   @IsEmail()
   @Column({
@@ -28,28 +34,26 @@ export class UserModel extends Model<UserModel> {
   })
   public email: string;
 
-  @ApiProperty({ type: String, example: 'Email' })
-  @MinLength(6)
   @AllowNull(false)
+  @MinLength(6)
   @Column({
     type: STRING(100),
     unique: true,
   })
   public password: string;
 
-  @ApiProperty({ type: String, example: 'RefreshToken' })
   @AllowNull(false)
-  @Column({
-    type: STRING,
-    unique: true,
-  })
-  public refresh_token: string;
+  @Default(UserRoleEnum.USER)
+  @Column({ type: ENUM(...Object.values(UserRoleEnum)) })
+  public role: string;
 
-  @AllowNull(false)
+  @UpdatedAt
+  @AllowNull(true)
   @Column({ type: DATE })
   public created_at: Date;
 
-  @AllowNull(false)
+  @CreatedAt
+  @AllowNull(true)
   @Column({ type: DATE })
   public updated_at: Date;
 }
