@@ -19,6 +19,7 @@ import * as connectRedis from 'connect-redis';
 import { createClient } from 'redis';
 import * as path from 'path';
 import * as session from 'express-session';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import * as session from 'express-session';
     UsersModule,
     CatalogOrderModule,
     CatalogOrderItemsModule,
+    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
   providers: [Logger],
@@ -44,7 +46,7 @@ import * as session from 'express-session';
 export class AppModule implements NestModule {
   constructor(@Inject(REDIS) private readonly redis: createClient) {}
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('users');
+    consumer.apply(LoggerMiddleware).forRoutes('*');
     consumer
       .apply(
         session({

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@src/users/services/users.service';
 import { UserModel } from '@src/users/models/user.model';
@@ -7,16 +7,20 @@ import { hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private userService: UsersService,
-    private jwtService: JwtService,
-  ) {}
+  @Inject(JwtService)
+  private readonly jwtService: JwtService;
+  @Inject(UsersService)
+  private readonly userService: UsersService;
+  // constructor(
+  //   private readonly userService: UsersService,
+  //   private readonly JWT: JWT,
+  // ) {}
 
-  async login(user: UserModel) {
-    const payload = { username: user.name, sub: user.id };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+  public login(user: any): string {
+    const payload = { id: user.id, name: user.name, role: user.role };
+    const token = this.jwtService.sign(payload, { secret: `key_secretJwt` });
+    console.log(token);
+    return this.jwtService.sign(payload);
   }
 
   async registerUser(

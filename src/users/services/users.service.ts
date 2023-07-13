@@ -9,12 +9,11 @@ export class UsersService {
   private readonly userModel: typeof UserModel;
 
   createUser(newUser: RegistrationUserDto) {
-    console.log(newUser);
     return this.userModel.create(newUser);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.userModel.findAll();
   }
 
   findOne(id: number) {
