@@ -20,9 +20,9 @@ export class UsersService {
     return this.userModel.findByPk(id);
   }
 
-  findOneName(userName: string) {
+  findOneName(username: string) {
     return this.userModel.findOne({
-      where: { name: userName },
+      where: { username },
     });
   }
 

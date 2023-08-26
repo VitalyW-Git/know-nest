@@ -9,7 +9,6 @@ import { sequelizeConnectDb } from '@src/config/sequelize-connect.db';
 import { Module, NestModule, MiddlewareConsumer, Inject } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { PassportModule } from '@nestjs/passport';
 import { Logger } from '@nestjs/common';
 import * as passport from 'passport';
@@ -17,7 +16,6 @@ import { RedisModule } from '@src/redis/redis.module';
 import { REDIS } from '@src/redis/redis.constants';
 import * as connectRedis from 'connect-redis';
 import { createClient } from 'redis';
-import * as path from 'path';
 import * as session from 'express-session';
 import { ConfigModule } from '@nestjs/config';
 
@@ -27,9 +25,6 @@ import { ConfigModule } from '@nestjs/config';
     SequelizeModule.forRootAsync({
       useFactory: sequelizeConnectDb,
       inject: [ConfigService],
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, 'static'),
     }),
     RedisModule,
     PassportModule,
@@ -54,7 +49,7 @@ export class AppModule implements NestModule {
             client: this.redis,
             logErrors: true,
           }),
-          secret: 'secret-key',
+          secret: process.env.JWT_SECRET,
           saveUninitialized: false,
           resave: false,
           cookie: {

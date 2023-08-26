@@ -1,26 +1,45 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@src/users/services/users.service';
 import { UserModel } from '@src/users/models/user.model';
 import { RegistrationUserDto } from '@src/users/dto/registration-user.dto';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  @Inject(JwtService)
-  private readonly jwtService: JwtService;
-  @Inject(UsersService)
-  private readonly userService: UsersService;
-  // constructor(
-  //   private readonly userService: UsersService,
-  //   private readonly JWT: JWT,
-  // ) {}
+  constructor(
+    private readonly userService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
-  public login(user: any): string {
-    const payload = { id: user.id, name: user.name, role: user.role };
-    const token = this.jwtService.sign(payload, { secret: `key_secretJwt` });
-    console.log(token);
-    return this.jwtService.sign(payload);
+  // public login(user: any): string {
+  //   const payload = { id: user.id, username: user.username, role: user.role };
+  //   const token = this.jwtService.sign(payload, { secret: `key_secretJwt` });
+  //   console.log(token);
+  //   return this.jwtService.sign(payload);
+  // }
+
+  async test() {
+    const payload = { username: 'name' };
+    console.log(payload);
+    console.log(process.env.JWT_SECRET);
+    const test = this.jwtService.sign(payload, { secret: 'vhfbvhbbjx' });
+    console.log(test);
+    return test;
+  }
+
+  createToken(user: any): string {
+    const payload = { username: user.username, sub: user.id };
+    return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
+  }
+
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.id };
+    return { payload };
   }
 
   async registerUser(
@@ -37,7 +56,18 @@ export class AuthService {
     return await this.userService.createUser(newUser);
   }
 
-  async getUserById(userId: number) {
-    return this.userService.findOne(userId);
+  async validateUser(
+    username: string,
+    password: string,
+  ): Promise<Omit<UserModel, 'password'>> {
+    const user = await this.userService.findOneName(username);
+    if (!user) {
+      return null;
+    }
+    const isPasswordValid = await compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Incorrect username or password');
+    }
+    return user;
   }
 }

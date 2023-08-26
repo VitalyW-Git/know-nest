@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Request } from 'express';
 import { LocalAuthGuard } from '@src/auth/guards/local-auth.guard';
 import { UsersService } from '@src/users/services/users.service';
 import { RegistrationUserDto } from '@src/users/dto/registration-user.dto';
 import { AuthService } from '@src/auth/services/auth.service';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { TokenInterceptor } from "@src/auth/interceptors/token.interceptor";
+import { AuthenticatedGuard } from "@src/auth/guards/authenticated.guard";
 
 @ApiTags('auth')
 @Controller('auth')
@@ -14,16 +17,18 @@ export class AuthController {
     private authService: AuthService,
   ) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseGuards(LocalAuthGuard)
+  // @UseGuards(AuthGuard('local'))
+  // @UseInterceptors(TokenInterceptor)
   async login(@Req() req: Request): Promise<boolean> {
-    console.log(req.user);
-    const toke = this.authService.login(req.user);
+    const toke = await this.authService.login(req.user);
+    console.log(toke);
     return false;
   }
 
-  @UseGuards(LocalAuthGuard)
   @Post('auth')
+  @UseGuards(LocalAuthGuard)
   async auth(@Req() req: Request): Promise<any> {
     return req.user;
   }
@@ -34,11 +39,9 @@ export class AuthController {
     return { message: 'User registered successfully', user };
   }
 
-  // @UseGuards(LocalAuthGuard)
-  @Get('logout')
-  async logout(@Req() req: Request) {
-    // console.log(req);
-    // req.logOut();
-    return { message: 'Logged out successfully' };
+  @Post('authenticated')
+  @UseGuards(AuthenticatedGuard)
+  async authenticated(@Req() req: Request) {
+    return req.user;
   }
 }

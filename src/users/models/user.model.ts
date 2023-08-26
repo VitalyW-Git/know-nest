@@ -24,7 +24,7 @@ export class UserModel extends Model<UserModel> {
 
   @AllowNull(false)
   @Column({ type: STRING })
-  public name: string;
+  public username: string;
 
   @AllowNull(false)
   @IsEmail()

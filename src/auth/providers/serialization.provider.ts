@@ -17,15 +17,16 @@ export class SerializationProvider extends PassportSerializer {
     user: UserModel,
     done: (
       err: Error,
-      user: { id: number; role: string; name: string },
+      user: { id: number; role: string; username: string },
     ) => void,
   ): any {
+    console.log('serializeUser', user);
     try {
       if (user) {
         return done(null, {
           id: user.id,
           role: user.role,
-          name: user.name,
+          username: user.username,
         });
       }
       return done(new BadRequestException('Error user authenticated'), null);
@@ -38,6 +39,7 @@ export class SerializationProvider extends PassportSerializer {
     payload: { id: number },
     done: (err: Error, user: Omit<UserModel, 'password'>) => void,
   ): Promise<any> {
+    console.log('deserializeUser', payload);
     try {
       if (payload.id) {
         const foundUser = await this.usersService.findOne(payload.id);

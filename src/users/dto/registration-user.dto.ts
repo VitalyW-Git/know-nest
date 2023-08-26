@@ -5,7 +5,7 @@ import { CreateUseDtoInterface } from '@src/users/interface/create-use-dto.Inter
 export class RegistrationUserDto implements CreateUseDtoInterface {
   @ApiProperty({ type: String })
   @IsNotEmpty()
-  readonly name: string;
+  readonly username: string;
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
