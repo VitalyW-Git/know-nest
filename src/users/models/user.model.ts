@@ -10,6 +10,7 @@ import {
 import { DATE, ENUM, INTEGER, STRING } from 'sequelize';
 import { IsEmail, MinLength } from 'class-validator';
 import { UserRoleEnum } from '@src/users/enum/user-role.enum';
+import {compare} from 'bcrypt';
 
 @Table({
   tableName: 'users',
@@ -56,4 +57,8 @@ export class UserModel extends Model<UserModel> {
   @AllowNull(true)
   @Column({ type: DATE })
   public updated_at: Date;
+
+  async checkPassword(plainPassword: string): Promise<boolean> {
+    return await compare(plainPassword, this.password);
+  }
 }

@@ -22,6 +22,7 @@ export class TokenInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map(user => {
         const response = context.switchToHttp().getResponse<Response>();
+        console.log('intercept', user);
         const token = this.authService.createToken(user);
         console.log('token', token)
 

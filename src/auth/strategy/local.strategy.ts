@@ -11,15 +11,19 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     private userService: UsersService,
     private authService: AuthService,
   ) {
-    super();
+    super({
+      usernameField: 'email',
+      passReqToCallback: false,
+    });
   }
 
   async validate(
-    username: string,
+    email: string,
     password: string,
   ): Promise<Omit<UserModel, 'password'>> {
-    console.log('LocalStrategy', username);
-    const user = await this.authService.validateUser(username, password);
+    console.log('LocalStrategy', email, password);
+    const user = await this.authService.validateUser(email, password);
+    console.log('LocalStrategy email', user);
     if (!user) {
       throw new UnauthorizedException();
     }

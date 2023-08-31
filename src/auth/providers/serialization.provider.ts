@@ -17,7 +17,7 @@ export class SerializationProvider extends PassportSerializer {
     user: UserModel,
     done: (
       err: Error,
-      user: { id: number; role: string; username: string },
+      user: { id: number; username: string },
     ) => void,
   ): any {
     console.log('serializeUser', user);
@@ -25,7 +25,6 @@ export class SerializationProvider extends PassportSerializer {
       if (user) {
         return done(null, {
           id: user.id,
-          role: user.role,
           username: user.username,
         });
       }
@@ -42,7 +41,7 @@ export class SerializationProvider extends PassportSerializer {
     console.log('deserializeUser', payload);
     try {
       if (payload.id) {
-        const foundUser = await this.usersService.findOne(payload.id);
+        const foundUser = await this.usersService.findOne(payload);
         return done(null, foundUser);
       }
       return done(new UnauthorizedException('Error user authenticated'), null);
@@ -50,4 +49,20 @@ export class SerializationProvider extends PassportSerializer {
       return done(new BadRequestException(err), null);
     }
   }
+
+  /*serializeUser(
+    user: UserModel,
+    done: (err: Error | null, id?: UserModel) => void,
+  ): void {
+    console.log('serializeUser', user)
+    done(null, user);
+  }
+
+  deserializeUser(
+    payload: unknown,
+    done: (err: Error | null, payload?: unknown) => void,
+  ): void {
+    console.log('deserializeUser', payload)
+    done(null, payload);
+  }*/
 }

@@ -7,7 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@src/users/services/users.service';
 import { UserModel } from '@src/users/models/user.model';
 import { RegistrationUserDto } from '@src/users/dto/registration-user.dto';
-import { compare, hash } from 'bcrypt';
+import { createClient } from 'redis';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -25,16 +26,17 @@ export class AuthService {
 
   async test() {
     const payload = { username: 'name' };
-    console.log(payload);
-    console.log(process.env.JWT_SECRET);
+    console.log('test', payload);
+    console.log('test JWT_SECRET', '514d1dd4ccdd1');
     const test = this.jwtService.sign(payload, { secret: 'vhfbvhbbjx' });
-    console.log(test);
+    console.log('testsign', test);
     return test;
   }
 
   createToken(user: any): string {
-    const payload = { username: user.username, sub: user.id };
-    return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
+    const payload = { username: user.username, sub: user.email, id: user.id };
+    console.log('createToken', payload);
+    return this.jwtService.sign(payload, { secret: '514d1dd4ccdd1' });
   }
 
   async login(user: any) {
@@ -57,17 +59,25 @@ export class AuthService {
   }
 
   async validateUser(
-    username: string,
+    email: string,
     password: string,
   ): Promise<Omit<UserModel, 'password'>> {
-    const user = await this.userService.findOneName(username);
+    const user = await this.userService.findOneEmail(email);
     if (!user) {
       return null;
     }
-    const isPasswordValid = await compare(password, user.password);
-    if (!isPasswordValid) {
+    // const isPasswordValid = await compare(password, user.password);
+    if (!(await user.checkPassword(password))) {
       throw new UnauthorizedException('Incorrect username or password');
     }
     return user;
+  }
+
+  async getSession(sessionId: string): Promise<any> {
+    // Получение сессии из Redis
+    const client = createClient();
+    const sessionData = await client.get(sessionId);
+    console.log('getSession', sessionData);
+    return JSON.parse(sessionData);
   }
 }

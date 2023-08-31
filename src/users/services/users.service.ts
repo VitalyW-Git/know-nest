@@ -16,8 +16,20 @@ export class UsersService {
     return await this.userModel.findAll();
   }
 
-  findOne(id: number) {
-    return this.userModel.findByPk(id);
+  async findOne(user: any): Promise<UserModel> {
+    if (!user?.username) {
+      return await this.userModel.findOne({
+        where: {
+          id: user.id
+        },
+      });
+    }
+    return await this.userModel.findOne({
+      where: {
+        username: user.username,
+        id: user.id
+      },
+    });
   }
 
   findOneName(username: string) {
@@ -27,7 +39,7 @@ export class UsersService {
   }
 
   async findOneEmail(userEmail: string) {
-    console.log(userEmail);
+    console.log('findOneEmail', userEmail);
     return await this.userModel.findOne({
       where: { email: userEmail },
     });

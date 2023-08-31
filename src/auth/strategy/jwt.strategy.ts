@@ -1,26 +1,36 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ExtractJwt, Strategy, JwtFromRequestFunction } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@src/users/services/users.service';
 
+const extractJwtFromCookie: JwtFromRequestFunction = request => {
+  console.log('extractJwtFromCookie', request.signedCookies['token']);
+  return request.signedCookies['token']!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+};
+
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   // private readonly logger = new Logger(JwtStrategy.name);
   constructor(private readonly usersService: UsersService) {
-    console.log(process.env.JWT_SECRET);
+    console.log('JwtStrategy constructor');
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        extractJwtFromCookie,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       ignoreExpiration: false,
-      secretOrKey: `${process.env.JWT_SECRET}`,
+      secretOrKey: '514d1dd4ccdd1',
     });
   }
 
   async validate(payload: any): Promise<any> {
-    console.log('JwtStrategy', payload);
-    const user = await this.usersService.findOne(payload.id);
-    if (user) {
+    console.log('JwtStrategy validate', payload);
+    const user = await this.usersService.findOne(payload);
+    console.log('JwtStrategy user', user);
+    if (!user) {
       throw new UnauthorizedException();
     }
-    return { id: payload.id, username: payload.username };
+    return true;
   }
+
 }

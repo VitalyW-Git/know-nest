@@ -7,31 +7,38 @@ import { AuthService } from '@src/auth/services/auth.service';
 import { SerializationProvider } from './providers/serialization.provider';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthController } from '@src/auth/controllers/auth.controller';
-import { LocalAuthGuard } from '@src/auth/guards/local-auth.guard';
-import { AuthenticatedGuard } from '@src/auth/guards/authenticated.guard';
 import { JwtStrategy } from '@src/auth/strategy/jwt.strategy';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
+import { RedisModule } from "@src/redis/redis.module";
+import { RedisService } from "@src/redis/redis.service";
+
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'local' }),
     SequelizeModule.forFeature([UserModel]),
     JwtModule.register({
-      secret: `${process.env.JWT_SECRET}`,
-      signOptions: { expiresIn: '1h' },
+      secret: `0dd8d1d7c673300e0e800e10e13eb6ee1414c140e046ebf7e2229010ab7ab79a10f06fddeebabfb428b6a380aa12654c`,
+      signOptions: {
+        expiresIn: '1d',
+        algorithm: 'HS384',
+      },
+      verifyOptions: {
+        algorithms: ['HS384'],
+      },
     }),
+    RedisModule
   ],
   controllers: [AuthController],
   providers: [
     UsersService,
     AuthService,
-    JwtService,
+    RedisService,
     LocalStrategy,
     JwtStrategy,
-    AuthenticatedGuard,
-    LocalAuthGuard,
     SerializationProvider,
   ],
-  exports: [UsersService, JwtModule],
+  exports: [PassportModule],
+  // exports: [UsersService, JwtModule],
 })
 export class AuthModule {}

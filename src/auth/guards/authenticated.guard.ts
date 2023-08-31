@@ -4,21 +4,27 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from "@src/auth/services/auth.service";
+import { AuthGuard } from "@nestjs/passport";
+import { RedisService } from "@src/redis/redis.service";
 
-@Injectable()
-/*export class AuthenticatedGuard implements CanActivate {
+/*@Injectable()
+export class AuthenticatedGuard implements CanActivate {
+  constructor(private readonly redisService: RedisService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+
+    // const value = await this.redisService.getSessionValue(request.sessionId, '514d1dd4ccdd1');
+    // console.log(value);
     if (request.isAuthenticated()) {
       return true;
     }
-    console.log(request);
     throw new UnauthorizedException('User is not authenticated');
   }
 }*/
 
-export class AuthenticatedGuard extends AuthGuard('local') {
+/*export class AuthenticatedGuard extends AuthGuard('local') {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     // Implement any additional logic if needed
     console.log(context);
@@ -31,5 +37,16 @@ export class AuthenticatedGuard extends AuthGuard('local') {
       throw new UnauthorizedException('User is not authenticated');
     }
     return user;
+  }
+}*/
+
+@Injectable()
+export class AuthenticatedGuard implements CanActivate {
+  constructor(private readonly redisService: RedisService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    console.log(request.user);
+    return true;
   }
 }

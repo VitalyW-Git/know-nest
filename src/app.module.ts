@@ -17,7 +17,6 @@ import { REDIS } from '@src/redis/redis.constants';
 import * as connectRedis from 'connect-redis';
 import { createClient } from 'redis';
 import * as session from 'express-session';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -33,7 +32,6 @@ import { ConfigModule } from '@nestjs/config';
     UsersModule,
     CatalogOrderModule,
     CatalogOrderItemsModule,
-    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
   providers: [Logger],
@@ -49,7 +47,7 @@ export class AppModule implements NestModule {
             client: this.redis,
             logErrors: true,
           }),
-          secret: process.env.JWT_SECRET,
+          secret: '514d1dd4ccdd1',
           saveUninitialized: false,
           resave: false,
           cookie: {
