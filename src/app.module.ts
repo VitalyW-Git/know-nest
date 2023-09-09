@@ -1,22 +1,25 @@
-import { configModule } from '@src/config/configure.root';
-import { LoggerMiddleware } from '@src/common/middleware/logger.middleware';
-import { ProductsModule } from '@src/products/products.module';
-import { UsersModule } from '@src/users/users.module';
-import { AuthModule } from '@src/auth/auth.module';
-import { CatalogOrderModule } from '@src/catalog-order/catalog-order.module';
-import { CatalogOrderItemsModule } from '@src/catalog-order-items/catalog-order-items.module';
-import { sequelizeConnectDb } from '@src/config/sequelize-connect.db';
-import { Module, NestModule, MiddlewareConsumer, Inject } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { ConfigService } from '@nestjs/config';
-import { PassportModule } from '@nestjs/passport';
-import { Logger } from '@nestjs/common';
-import * as passport from 'passport';
-import { RedisModule } from '@src/redis/redis.module';
-import { REDIS } from '@src/redis/redis.constants';
-import * as connectRedis from 'connect-redis';
-import { createClient } from 'redis';
+import {
+  Inject,
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
+
+import * as RedisStore from 'connect-redis';
 import * as session from 'express-session';
+import * as passport from 'passport';
+import { RedisClient } from 'redis';
+
+import { AppController } from '@src/app.controller';
+import { AppService } from '@src/app.service';
+import { AuthModule } from '@src/auth';
+import { REDIS, RedisModule } from '@src/redis';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { sequelizeConnectDb } from '@src/config/sequelize-connect.db';
+import { ConfigService } from '@nestjs/config';
+import { configModule } from '@src/config/configure.root';
+import { UserModule } from '@src/users/user.module';
 
 @Module({
   imports: [
@@ -25,36 +28,30 @@ import * as session from 'express-session';
       useFactory: sequelizeConnectDb,
       inject: [ConfigService],
     }),
-    RedisModule,
-    PassportModule,
     AuthModule,
-    ProductsModule,
-    UsersModule,
-    CatalogOrderModule,
-    CatalogOrderItemsModule,
+    UserModule,
+    RedisModule,
   ],
-  controllers: [],
-  providers: [Logger],
+  providers: [AppService, Logger],
+  controllers: [AppController],
 })
 export class AppModule implements NestModule {
-  constructor(@Inject(REDIS) private readonly redis: createClient) {}
+  constructor(@Inject(REDIS) private readonly redis: RedisClient) {}
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
     consumer
       .apply(
         session({
-          store: new (connectRedis(session))({
+          store: new (RedisStore(session))({
             client: this.redis,
             logErrors: true,
           }),
-          secret: '514d1dd4ccdd1',
           saveUninitialized: false,
+          secret: process.env.SECRET_KEY,
           resave: false,
           cookie: {
-            secure: true,
-            sameSite: 'strict',
+            sameSite: true,
             httpOnly: false,
-            maxAge: 1000 * 60 * 60 * 24 * 3,
+            maxAge: 600000,
           },
         }),
         passport.initialize(),

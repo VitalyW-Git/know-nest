@@ -10,14 +10,17 @@ import {
 import { DATE, ENUM, INTEGER, STRING } from 'sequelize';
 import { IsEmail, MinLength } from 'class-validator';
 import { UserRoleEnum } from '@src/users/enum/user-role.enum';
-import {compare} from 'bcrypt';
+import { compare } from 'bcrypt';
 
 @Table({
-  tableName: 'users',
+  tableName: 'user',
   collate: 'utf8_general_ci',
   paranoid: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',
+  // defaultScope: {
+  //   raw: true,
+  // },
 })
 export class UserModel extends Model<UserModel> {
   @Column({ type: INTEGER, primaryKey: true, autoIncrement: true })
