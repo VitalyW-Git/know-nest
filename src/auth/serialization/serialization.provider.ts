@@ -3,7 +3,6 @@ import { PassportSerializer } from '@nestjs/passport';
 
 import { AuthService } from '@src/auth/service/auth.service';
 import { UserService } from '@src/users/services/user.service';
-import { CreateUseInterface } from '@src/users/interface/create-use.interface';
 import { UserModel } from '@src/users/models/user.model';
 
 @Injectable()

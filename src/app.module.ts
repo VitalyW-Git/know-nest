@@ -20,6 +20,7 @@ import { sequelizeConnectDb } from '@src/config/sequelize-connect.db';
 import { ConfigService } from '@nestjs/config';
 import { configModule } from '@src/config/configure.root';
 import { UserModule } from '@src/users/user.module';
+import { SharedModule } from '@src/libs/shared.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UserModule } from '@src/users/user.module';
     AuthModule,
     UserModule,
     RedisModule,
+    SharedModule,
   ],
   providers: [AppService, Logger],
   controllers: [AppController],
